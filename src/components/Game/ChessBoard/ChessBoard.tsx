@@ -1,34 +1,27 @@
 import React from 'react';
 import './ChessBoard.css';
+import ChessBoardRow from 'src/components/Game/ChessBoard/ChessBoardRow.tsx';
 
-type Board = (string | null)[][];
 
-interface ChessBoardProps {
-  board: Board;
-  currentPlayer: string;
-}
+const board =  [['♖', '♘', '♗', '♔', '♕', '♗', '♘', '♖'],
+['♙', '♙', '♙', '♙', '♙', '♙', '♙', '♙'],
+['', '', '', '', '', '', '', ''], 
+['', '', '', '', '', '', '', ''],
+['', '', '', '', '', '', '', ''],
+['', '', '', '', '', '', '', ''],
+['♟', '♟', '♟', '♟', '♟', '♟', '♟', '♟'],
+['♜', '♞', '♝', '♛', '♚', '♝', '♞', '♜']];
 
-const ChessBoard: React.FC<ChessBoardProps> = ({ board, currentPlayer }) => {
+
+const ChessBoard: React.FC = () => {
   return (
-    <div>
-      <h2>Tour de : {currentPlayer}</h2>
-      <div className="chess-board">
-        {board.map((row, rowIndex) => (
-          <div key={rowIndex} className="chess-row">
-            {row.map((cell, cellIndex) => {
-              const isWhite = (rowIndex + cellIndex) % 2 === 0;
-              return (
-                <div
-                  key={cellIndex}
-                  className={`chess-cell ${isWhite ? 'white' : 'black'}`}
-                >
-                  {cell || ''}
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
+    <div className="flex flex-col justify-center items-center my-12">
+      {board.map((row) => (
+        <ChessBoardRow
+          key={row[0]}
+          pieces={row}
+        />
+      ))}
     </div>
   );
 };
