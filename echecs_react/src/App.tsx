@@ -1,10 +1,14 @@
 import './App.css'
+import Game from './components/Game/Game.tsx'
+
 
 function App() {
 
   return (
     <>
-      <h1> Echecs et MAT</h1>
+      <div className="container mx-auto flex flex-col items-center">
+      <Game />
+      </div>
     </>
   )
 }
