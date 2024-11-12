@@ -3,10 +3,11 @@ import ChessBoardKey from 'src/components/Game/ChessBoard/ChessBoardKey.tsx';
 
 interface Props {
     pieces: string[];
+    onKeyPress: (piece: string) => void;
+
 }
 
-const ChessBoardRow: React.FC<Props> = ({ pieces }) => {
-    console.log("toto",pieces);
+const ChessBoardRow: React.FC<Props> = ({ pieces,onKeyPress }) => {
   return (
     <div className="flex">
       {
@@ -14,6 +15,8 @@ const ChessBoardRow: React.FC<Props> = ({ pieces }) => {
          <ChessBoardKey
            key={piece}
            piece={piece}
+           onKeyPress={onKeyPress}
+
          />
         ))
       }
