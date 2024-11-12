@@ -1,5 +1,4 @@
 import React from 'react';
-import './ChessBoard.css';
 import ChessBoardRow from 'src/components/Game/ChessBoard/ChessBoardRow.tsx';
 
 
