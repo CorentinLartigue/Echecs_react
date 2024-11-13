@@ -1,10 +1,10 @@
 import React from 'react';
 
 interface Props {
-  piece: string;
-  rowIdx: number;
-  colIdx: number;
-  onKeyPress: (piece: string, rowIdx: number, colIdx: number) => void;
+  piece: string; 
+  rowIdx: number; 
+  colIdx: number; 
+  onKeyPress: (piece: string, rowIdx: number, colIdx: number) => void; 
 }
 
 const ChessBoardKey: React.FC<Props> = ({ piece, rowIdx, colIdx, onKeyPress }) => {

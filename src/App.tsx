@@ -1,15 +1,13 @@
-import Game from './components/Game/Game.tsx'
+import { RouterProvider } from 'react-router-dom'
+import router from './config/router'
 
 
-function App() {
 
-  return (
-    <>
-      <div className="container mx-auto flex flex-col items-center">
-      <Game />
+
+const App = () => (
+      <div className="App">
+        <RouterProvider router={router}/>
       </div>
-    </>
-  )
-}
+)
 
 export default App
