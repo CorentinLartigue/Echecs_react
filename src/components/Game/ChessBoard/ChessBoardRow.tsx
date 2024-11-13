@@ -14,8 +14,8 @@ const ChessBoardRow: React.FC<Props> = ({ rowIdx, pieces, onKeyPress }) => {
         <ChessBoardKey
           key={colIdx}
           piece={piece}
-          rowIdx={rowIdx}  // Passer l'indice de ligne
-          colIdx={colIdx}  // Passer l'indice de colonne
+          rowIdx={rowIdx}  
+          colIdx={colIdx}  
           onKeyPress={onKeyPress}
         />
       ))}
