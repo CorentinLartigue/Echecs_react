@@ -14,7 +14,7 @@ const Game: React.FC = () => {
         switch (piece){
             case '♔':
             case '♚':
-                console.log("tanus",true)
+                
             break;
             case '♛':
             case '♕':
