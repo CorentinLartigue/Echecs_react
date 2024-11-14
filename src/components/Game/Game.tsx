@@ -49,9 +49,19 @@ const Game: React.FC = () => {
 
   // Fonction principale pour gérer les clics
 const onKeyPress = (piece: string, rowIdx: number, colIdx: number) => {
+
+  
   // Vérifie si une pièce est déjà sélectionnée (cas où on effectue un mouvement)
   if (selectedPiece && selectedPosition) {
     // Vérifie si le mouvement est valide
+    // Si le joueur clique à nouveau sur la même case, annule la sélection
+    if (selectedPosition[0] === rowIdx && selectedPosition[1] === colIdx) {
+      setSelectedPiece(null);
+      setSelectedPosition(null);
+      setHighlightedMoves([]);
+      setMessage("Sélection annulée.");
+      return;
+    }
     const isMoveValid = highlightedMoves.some(
       ([moveRow, moveCol]) => moveRow === rowIdx && moveCol === colIdx
     );
