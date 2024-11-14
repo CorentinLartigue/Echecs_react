@@ -6,11 +6,14 @@ const HomePage: React.FC = () => {
     <div className="bg-cover bg-center bg-no-repeat bg-fixed" style={{ backgroundImage: "url('/src/assets/background.jpg')" }}>
       <div className="flex flex-col items-center justify-center h-screen "  >
         <Title text="Notre Jeux d'échecs en React"/>
-        <Link to="/game" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        <Link to="/game" className="bg-gradient-to-r from-gray-700 to-blue-500 text-white font-bold py-2 px-4 rounded-full shadow-lg hover:scale-105 transition duration-300">
           JOUER
         </Link>
-        <Link to="/stat" className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded ml-4">
+        <Link to="/stat" className="bg-gradient-to-r from-gray-700 to-blue-500 text-white font-bold py-2 px-4 rounded-full shadow-lg hover:scale-105 transition duration-300">
           STATISTIQUE
+        </Link>
+        <Link to="/explication" className="bg-gradient-to-r from-gray-700 to-blue-500 text-white font-bold py-2 px-4 rounded-full shadow-lg hover:scale-105 transition duration-300">
+          EXPLICATION REGLES
         </Link>
       </div>
     </div>

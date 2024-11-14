@@ -321,7 +321,7 @@ const onKeyPress = (piece: string, rowIdx: number, colIdx: number) => {
 
   return (
     <div>
-      <Title text="Les échecs c'est génial" />
+      <Title text="Partie en Cours" />
       {message && <p>{message}</p>}
       <ChessBoard board={board} onKeyPress={onKeyPress} highlightedMoves={highlightedMoves} />
       <ReturnButton />
