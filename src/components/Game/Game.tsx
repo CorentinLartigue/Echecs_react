@@ -153,7 +153,7 @@ const Game: React.FC = () => {
 
   return (
     <div>
-      <Title text="Les échecs c'est génial" />
+      <Title text="Partie en Cours" />
       {message && <p>{message}</p>}
       <ChessBoard board={board} onKeyPress={onKeyPress} highlightedMoves={highlightedMoves} />
       <ReturnButton/>

@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-
-
 const ReturnButton: React.FC = () => {
   return (
-    <div >
-        <Link to="/" className="bg-blue-500 hover:bg-blue-700 text-white font-bold">Retour</Link>
+    <div className="fixed bottom-4 right-6">
+      <Link to="/" className="bg-gradient-to-r from-gray-700 to-blue-500 text-white font-bold py-2 px-4 rounded-full shadow-lg hover:scale-105 transition duration-300">
+        Retour
+      </Link>
     </div>
   );
 };
