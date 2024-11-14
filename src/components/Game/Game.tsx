@@ -12,14 +12,14 @@ const Game: React.FC = () => {
 
   const generateInitialBoard = (): string[][] => {
     return [
-      ['♖', '♘', '♗', '♔', '♕', '♗', '♘', '♖'],
-      ['♙', '♙', '♙', '♙', '♙', '♙', '♙', '♙'],
-      ['', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', ''],
+      ['♜', '♞', '♝', '♛', '♚', '♝', '♞', '♜'],
       ['♟', '♟', '♟', '♟', '♟', '♟', '♟', '♟'],
-      ['♜', '♞', '♝', '♛', '♚', '♝', '♞', '♜']
+      ['', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', ''],
+      ['♙', '♙', '♙', '♙', '♙', '♙', '♙', '♙'],
+      ['♖', '♘', '♗', '♔', '♕', '♗', '♘', '♖']
     ];
   };
 
@@ -213,7 +213,7 @@ const onKeyPress = (piece: string, rowIdx: number, colIdx: number) => {
     
 
     switch (piece) {
-      case '♟': // pion noir
+      case '♙': // pion noir
         if (rowIdx > 0 && board[rowIdx - 1][colIdx] === '') {
           moves.push([rowIdx - 1, colIdx]);
 
@@ -223,16 +223,16 @@ const onKeyPress = (piece: string, rowIdx: number, colIdx: number) => {
         }
 
         if (rowIdx > 0) {
-          if (colIdx > 0 && board[rowIdx - 1][colIdx - 1] !== '' && !blackPieces.includes(board[rowIdx - 1][colIdx - 1])) {
+          if (colIdx > 0 && board[rowIdx - 1][colIdx - 1] !== '' && !whitePieces.includes(board[rowIdx - 1][colIdx - 1])) {
             moves.push([rowIdx - 1, colIdx - 1]);
           }
-          if (colIdx < 7 && board[rowIdx - 1][colIdx + 1] !== '' && !blackPieces.includes(board[rowIdx - 1][colIdx + 1])) {
+          if (colIdx < 7 && board[rowIdx - 1][colIdx + 1] !== '' && !whitePieces.includes(board[rowIdx - 1][colIdx + 1])) {
             moves.push([rowIdx - 1, colIdx + 1]);
           }
         }
         break;
 
-      case '♙': // pion blanc
+      case '♟': // pion blanc
         if (rowIdx < 7 && board[rowIdx + 1][colIdx] === '') {
           moves.push([rowIdx + 1, colIdx]);
 
@@ -242,10 +242,10 @@ const onKeyPress = (piece: string, rowIdx: number, colIdx: number) => {
         }
 
         if (rowIdx < 7) {
-          if (colIdx > 0 && board[rowIdx + 1][colIdx - 1] !== '' && !whitePieces.includes(board[rowIdx + 1][colIdx - 1])) {
+          if (colIdx > 0 && board[rowIdx + 1][colIdx - 1] !== '' && !blackPieces.includes(board[rowIdx + 1][colIdx - 1])) {
             moves.push([rowIdx + 1, colIdx - 1]);
           }
-          if (colIdx < 7 && board[rowIdx + 1][colIdx + 1] !== '' && !whitePieces.includes(board[rowIdx + 1][colIdx + 1])) {
+          if (colIdx < 7 && board[rowIdx + 1][colIdx + 1] !== '' && !blackPieces.includes(board[rowIdx + 1][colIdx + 1])) {
             moves.push([rowIdx + 1, colIdx + 1]);
           }
         }
