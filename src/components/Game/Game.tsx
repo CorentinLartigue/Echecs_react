@@ -90,7 +90,7 @@ const Game: React.FC = () => {
         c += colDirection;
       }
       // Vérifier si la case est occupée par un allié
-      if (r >= 0 && r < 8 && c >= 0 && c < 8 && !isAllyPiece(piece, r, c)) {
+      if (r >= 0 && r < 8 && c >= 0 && c < 8 && isAllyPiece(piece, r, c)) {
         moves.push([r, c]);
       }
     }
