@@ -24,20 +24,26 @@ const Game: React.FC = () => {
 
   const [board, setBoard] = useState<string[][]>(generateInitialBoard);
 
+  // Liste des pièces blanches et noires
+  const whitePieces = ['♙', '♖', '♘', '♗', '♕', '♔'];
+  const blackPieces = ['♟', '♜', '♞', '♝', '♛', '♚'];
+
   const isAllyPiece = (piece: string, targetRow: number, targetCol: number): boolean => {
     if (piece === '') return false;
-    const allyColor = piece === piece.toUpperCase() ? 'white' : 'black'; // Majuscule = Blanc, Minuscule = Noir
+    
     const targetPiece = board[targetRow][targetCol];
-    const targetColor = targetPiece === targetPiece.toUpperCase() ? 'white' : 'black';
-    return allyColor === targetColor;
-  };
+    const isWhitePiece = whitePieces.includes(piece);
+    const isBlackPiece = blackPieces.includes(piece);
 
-  const isEnemyPiece = (piece: string, targetRow: number, targetCol: number): boolean => {
-    const targetPiece = board[targetRow][targetCol];
-    if (piece === '' || targetPiece === '') return false;
-    const pieceColor = piece === piece.toUpperCase() ? 'white' : 'black';
-    const targetColor = targetPiece === targetPiece.toUpperCase() ? 'white' : 'black';
-    return pieceColor !== targetColor;
+   
+    if (isWhitePiece && whitePieces.includes(targetPiece)) {
+      return false;
+    }
+    if (isBlackPiece && blackPieces.includes(targetPiece)) {
+      return false;
+    }
+
+    return true; 
   };
 
   // Gestion du clic sur la pièce
@@ -75,8 +81,6 @@ const Game: React.FC = () => {
       }
     }
   };
-  
-
 
   const calculateValidMoves = (piece: string, rowIdx: number, colIdx: number): [number, number][] => {
     const moves: [number, number][] = [];
@@ -94,107 +98,63 @@ const Game: React.FC = () => {
         moves.push([r, c]);
       }
     }
-      
-        switch (piece) {
-          case '♟'://pion noir
-            if (rowIdx > 0 && board[rowIdx - 1][colIdx] === '') {
-              moves.push([rowIdx - 1, colIdx]);
-      
-              
-              if (rowIdx === 6 && board[rowIdx - 2][colIdx] === '') {
-                moves.push([rowIdx - 2, colIdx]); 
-              }
-            }
-      
-            
-            if (rowIdx > 0) {
-              if (colIdx > 0 && board[rowIdx - 1][colIdx - 1] !== '' && board[rowIdx - 1][colIdx - 1] !== piece) {
-                moves.push([rowIdx - 1, colIdx - 1]); 
-              }
-              if (colIdx < 7 && board[rowIdx - 1][colIdx + 1] !== '' && board[rowIdx - 1][colIdx + 1] !== piece) {
-                moves.push([rowIdx - 1, colIdx + 1]); 
-              }
-            }
-          break;
-          case '♙'://pion blanc
-            if (rowIdx > 0 && board[rowIdx + 1][colIdx] === '') {
-              moves.push([rowIdx + 1, colIdx]);
-      
-              
-              if (rowIdx === 1 && board[rowIdx + 2][colIdx] === '') {
-                moves.push([rowIdx + 2, colIdx]); 
-              }
-            }
-      
-            
-            if (rowIdx > 0) {
-              if (colIdx > 0 && board[rowIdx + 1][colIdx + 1] !== '' && board[rowIdx + 1][colIdx + 1] !== piece) {
-                moves.push([rowIdx - 1, colIdx - 1]); 
-              }
-              if (colIdx < 7 && board[rowIdx + 1][colIdx - 1] !== '' && board[rowIdx + 1][colIdx - 1] !== piece) {
-                moves.push([rowIdx + 1, colIdx - 1]); 
-              }
-            }
-          break;
-            
-          case '♗'://fou
-          case '♝':
-            for (let i = 1; i < 8; i++) {
-              generateLineMoves(rowIdx, colIdx, -1, -1); // Haut gauche
-              generateLineMoves(rowIdx, colIdx, -1, 1); // Haut droit
-              generateLineMoves(rowIdx, colIdx, 1, -1); // Bas gauche
-              generateLineMoves(rowIdx, colIdx, 1, 1); // Bas droit
-            }
-          break;
-          case '♔':
-          case '♚':
-                //calcul piece dispo rois
-                moves.push(
-                    [rowIdx - 1, colIdx],  
-                    [rowIdx + 1, colIdx],  
-                    [rowIdx, colIdx - 1],  
-                    [rowIdx, colIdx + 1],  
-                    [rowIdx - 1, colIdx - 1], 
-                    [rowIdx - 1, colIdx + 1],
-                    [rowIdx + 1, colIdx - 1], 
-                    [rowIdx + 1, colIdx + 1]  
-                  );
-                  
-              break;
-              case '♛':
-              case '♕':
-                    //calcul piece dispo reine   
-                    generateLineMoves(rowIdx, colIdx, -1, 0);  
-                    generateLineMoves(rowIdx, colIdx, 1, 0);  
-                    generateLineMoves(rowIdx, colIdx, 0, -1);  
-                    generateLineMoves(rowIdx, colIdx, 0, 1);   
-                    generateLineMoves(rowIdx, colIdx, -1, -1); 
-                    generateLineMoves(rowIdx, colIdx, -1, 1);  
-                    generateLineMoves(rowIdx, colIdx, 1, -1);  
-                    generateLineMoves(rowIdx, colIdx, 1, 1);
-              break;
-              case '♖':
-              case '♜':
-                  //calcul piece dispo tour   
-                  generateLineMoves(rowIdx, colIdx, -1, 0);
-                  generateLineMoves(rowIdx, colIdx, 1, 0);   
-                  generateLineMoves(rowIdx, colIdx, 0, -1);  
-                  generateLineMoves(rowIdx, colIdx, 0, 1);  
-                break;
-                case '♘':
-                case '♞':
-                    //calcul piece dispo cavalier  
-                    moves.push(
-                        [rowIdx - 2, colIdx - 1], [rowIdx - 2, colIdx + 1],
-                        [rowIdx + 2, colIdx - 1], [rowIdx + 2, colIdx + 1],
-                        [rowIdx - 1, colIdx - 2], [rowIdx - 1, colIdx + 2],
-                        [rowIdx + 1, colIdx - 2], [rowIdx + 1, colIdx + 2]
-                      );  
-                    
-                
-                break;
 
+    switch (piece) {
+      case '♟': // pion noir
+        if (rowIdx > 0 && board[rowIdx - 1][colIdx] === '') {
+          moves.push([rowIdx - 1, colIdx]);
+
+          if (rowIdx === 6 && board[rowIdx - 2][colIdx] === '') {
+            moves.push([rowIdx - 2, colIdx]);
+          }
+        }
+
+        if (rowIdx > 0) {
+          if (colIdx > 0 && board[rowIdx - 1][colIdx - 1] !== '' && !blackPieces.includes(board[rowIdx - 1][colIdx - 1])) {
+            moves.push([rowIdx - 1, colIdx - 1]);
+          }
+          if (colIdx < 7 && board[rowIdx - 1][colIdx + 1] !== '' && !blackPieces.includes(board[rowIdx - 1][colIdx + 1])) {
+            moves.push([rowIdx - 1, colIdx + 1]);
+          }
+        }
+        break;
+
+      case '♙': // pion blanc
+        if (rowIdx < 7 && board[rowIdx + 1][colIdx] === '') {
+          moves.push([rowIdx + 1, colIdx]);
+
+          if (rowIdx === 1 && board[rowIdx + 2][colIdx] === '') {
+            moves.push([rowIdx + 2, colIdx]);
+          }
+        }
+
+        if (rowIdx < 7) {
+          if (colIdx > 0 && board[rowIdx + 1][colIdx - 1] !== '' && !whitePieces.includes(board[rowIdx + 1][colIdx - 1])) {
+            moves.push([rowIdx + 1, colIdx - 1]);
+          }
+          if (colIdx < 7 && board[rowIdx + 1][colIdx + 1] !== '' && !whitePieces.includes(board[rowIdx + 1][colIdx + 1])) {
+            moves.push([rowIdx + 1, colIdx + 1]);
+          }
+        }
+        break;
+
+      case '♗': // fou
+      case '♝':
+        for (let i = 1; i < 8; i++) {
+          generateLineMoves(rowIdx, colIdx, -1, -1); // Haut gauche
+          generateLineMoves(rowIdx, colIdx, -1, 1); // Haut droit
+          generateLineMoves(rowIdx, colIdx, 1, -1); // Bas gauche
+          generateLineMoves(rowIdx, colIdx, 1, 1); // Bas droit
+        }
+        break;
+
+      // Autres pièces (Reine, Roi, Cavalier, etc.)
+      // Assurez-vous de vérifier les captures dans les directions appropriées.
+
+      default:
+        break;
     }
+
     return moves;
   };
 
@@ -203,7 +163,7 @@ const Game: React.FC = () => {
       <Title text="Les échecs c'est génial" />
       {message && <p>{message}</p>}
       <ChessBoard board={board} onKeyPress={onKeyPress} highlightedMoves={highlightedMoves} />
-      <ReturnButton/>
+      <ReturnButton />
     </div>
   );
 };
