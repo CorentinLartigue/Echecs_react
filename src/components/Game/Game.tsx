@@ -60,7 +60,7 @@ const Game: React.FC = () => {
 function  CaseToDeplace(piece: string, rowIdx: number, colIdx: number){
     const moves: Position[] = [];
 
-    function generateLineMoves(row: number, col: number, rowDirection: number, colDirection: number): void {
+    function MouvementLignes(row: number, col: number, rowDirection: number, colDirection: number): void {
         let r = row + rowDirection;
         let c = col + colDirection;
     
@@ -93,14 +93,14 @@ function  CaseToDeplace(piece: string, rowIdx: number, colIdx: number){
         case '♛':
         case '♕':
             //calcul piece dispo reine   
-            generateLineMoves(rowIdx, colIdx, -1, 0);  
-            generateLineMoves(rowIdx, colIdx, 1, 0);  
-            generateLineMoves(rowIdx, colIdx, 0, -1);  
-            generateLineMoves(rowIdx, colIdx, 0, 1);   
-            generateLineMoves(rowIdx, colIdx, -1, -1); 
-            generateLineMoves(rowIdx, colIdx, -1, 1);  
-            generateLineMoves(rowIdx, colIdx, 1, -1);  
-            generateLineMoves(rowIdx, colIdx, 1, 1);   
+            MouvementLignes(rowIdx, colIdx, -1, 0);  
+            MouvementLignes(rowIdx, colIdx, 1, 0);  
+            MouvementLignes(rowIdx, colIdx, 0, -1);  
+            MouvementLignes(rowIdx, colIdx, 0, 1);   
+            MouvementLignes(rowIdx, colIdx, -1, -1); 
+            MouvementLignes(rowIdx, colIdx, -1, 1);  
+            MouvementLignes(rowIdx, colIdx, 1, -1);  
+            MouvementLignes(rowIdx, colIdx, 1, 1);   
             console.log (moves);
       
           break;
@@ -109,7 +109,7 @@ function  CaseToDeplace(piece: string, rowIdx: number, colIdx: number){
             const direction = (piece === '♙') ? +1 : -1; 
             moves.push([rowIdx + direction, colIdx]);  
             if ((piece === '♙' && rowIdx === 6) || (piece === '♟' && rowIdx === 1)) {
-              moves.push([rowIdx + 2 * direction, colIdx]); 
+              moves.push([rowIdx + 2 * direction, colIdx]); //bouge de deux case wala
             }    
             //todo premier deplacement 
             console.log (moves);
@@ -117,20 +117,20 @@ function  CaseToDeplace(piece: string, rowIdx: number, colIdx: number){
           case '♗':
           case '♝':
             //calcul piece dispo fou  
-            generateLineMoves(rowIdx, colIdx, -1, -1); 
-            generateLineMoves(rowIdx, colIdx, -1, 1); 
-            generateLineMoves(rowIdx, colIdx, 1, -1);  
-            generateLineMoves(rowIdx, colIdx, 1, 1);  
+            MouvementLignes(rowIdx, colIdx, -1, -1); 
+            MouvementLignes(rowIdx, colIdx, -1, 1); 
+            MouvementLignes(rowIdx, colIdx, 1, -1);  
+            MouvementLignes(rowIdx, colIdx, 1, 1);  
             console.log (moves);
          
           break;
           case '♖':
           case '♜':
             //calcul piece dispo tour   
-            generateLineMoves(rowIdx, colIdx, -1, 0);
-            generateLineMoves(rowIdx, colIdx, 1, 0);   
-            generateLineMoves(rowIdx, colIdx, 0, -1);  
-            generateLineMoves(rowIdx, colIdx, 0, 1);  
+            MouvementLignes(rowIdx, colIdx, -1, 0);
+            MouvementLignes(rowIdx, colIdx, 1, 0);   
+            MouvementLignes(rowIdx, colIdx, 0, -1);  
+            MouvementLignes(rowIdx, colIdx, 0, 1);  
             console.log (moves);
         
           break;
