@@ -1,4 +1,4 @@
-*import React from 'react';
+import React from 'react';
 import ChessBoardKey from 'src/components/Game/ChessBoard/ChessBoardKey.tsx';
 
 interface Props {
