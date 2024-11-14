@@ -18,7 +18,7 @@ const Game: React.FC = () => {
       ['', '', '', '', '', '', '', ''],
       ['', '', '', '', '', '', '', ''],
       ['♟', '♟', '♟', '♟', '♟', '♟', '♟', '♟'],
-      ['♜', '♞', '♝', '♛', '♚', '♝', '♞', '♜']
+      ['♜', '♞', '♝', '♚', '♛', '♝', '♞', '♜']
     ];
   };
 
@@ -203,11 +203,12 @@ const Game: React.FC = () => {
 
     return moves;
   };
-
+  
+  
   return (
     <div>
       <Title text="Partie en Cours" />
-      {message && <p>{message}</p>}
+      {message && <p>{message}</p>} 
       <ChessBoard board={board} onKeyPress={onKeyPress} highlightedMoves={highlightedMoves} />
       <ReturnButton />
     </div>
