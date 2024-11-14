@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Title from '../Shared/Title';
 import ChessBoard from './ChessBoard/ChessBoard';
+import ReturnButton from '../Shared/ReturnButton';
 
 const Game: React.FC = () => {
   const [message, setMessage] = useState<string | null>(null);
@@ -155,6 +156,7 @@ const Game: React.FC = () => {
       <Title text="Les échecs c'est génial" />
       {message && <p>{message}</p>}
       <ChessBoard board={board} onKeyPress={onKeyPress} highlightedMoves={highlightedMoves} />
+      <ReturnButton/>
     </div>
   );
 };
