@@ -4,10 +4,9 @@ import ChessBoard from './ChessBoard/ChessBoard';
 
 const Game: React.FC = () => {
   const [message, setMessage] = useState<string | null>(null);
-
   const [selectedPiece, setSelectedPiece] = useState<string | null>(null);
   const [selectedPosition, setSelectedPosition] = useState<[number, number] | null>(null);
-  
+  const [highlightedMoves, setHighlightedMoves] = useState<[number, number][]>([]);
 
   const generateInitialBoard = (): string[][] => {
     return [
@@ -23,142 +22,87 @@ const Game: React.FC = () => {
   };
 
   const [board, setBoard] = useState<string[][]>(generateInitialBoard);
+
   const onKeyPress = (piece: string, rowIdx: number, colIdx: number) => {
-    setMessage(null); 
     if (selectedPiece) {
-     
-      const newBoard = [...board]; 
-      newBoard[selectedPosition![0]][selectedPosition![1]] = '';
-      newBoard[rowIdx][colIdx] = piece; 
-
-      setBoard(newBoard);
-
-      setSelectedPiece(null);
-      setSelectedPosition(null);
+ 
+      const isMoveValid = highlightedMoves.some(
+        ([moveRow, moveCol]) => moveRow === rowIdx && moveCol === colIdx
+      );
+      if (isMoveValid) {
+   
+        const newBoard = board.map(row => [...row]);
+        newBoard[selectedPosition![0]][selectedPosition![1]] = '';
+        newBoard[rowIdx][colIdx] = selectedPiece;
+        setBoard(newBoard);
+        setSelectedPiece(null);
+        setSelectedPosition(null);
+        setHighlightedMoves([]);
+      } else {
+        setMessage("Déplacement invalide. Choisissez une case valide.");
+      }
     } else {
       setSelectedPiece(piece);
       setSelectedPosition([rowIdx, colIdx]);
-    }
-    CaseToDeplace(piece,rowIdx,colIdx)
-    switch (piece) {
-      case '♔':
-      case '♚':
-
-        break;
-      case '♛':
-      case '♕':
-
-        break;
-      default:
-        console.log("Pièce sélectionnée", piece , "coordonée:" ,"lignes",rowIdx,"colone",colIdx,);
-        break;
+      const moves = calculateValidMoves(piece, rowIdx, colIdx);
+      setHighlightedMoves(calculateValidMoves(piece, rowIdx, colIdx));
+      console.log("Highlighted moves:", moves);
     }
   };
 
-
-  type Position = [number, number];
-function  CaseToDeplace(piece: string, rowIdx: number, colIdx: number){
-    const moves: Position[] = [];
+  const calculateValidMoves = (piece: string, rowIdx: number, colIdx: number): [number, number][] => {
+    const moves: [number, number][] = [];
 
     function generateLineMoves(row: number, col: number, rowDirection: number, colDirection: number): void {
-        let r = row + rowDirection;
-        let c = col + colDirection;
-    
-        // Continuer tant que nous ne dépassons pas les bords du plateau (0 <= r < 8 et 0 <= c < 8)
-        while (r >= 0 && r < 8 && c >= 0 && c < 8) {
-          moves.push([r, c]);
-          r += rowDirection;
-          c += colDirection;
-        }
+      let r = row + rowDirection;
+      let c = col + colDirection;
+      while (r >= 0 && r < 8 && c >= 0 && c < 8 && board[r][c] === '') {
+        moves.push([r, c]);
+        r += rowDirection;
+        c += colDirection;
       }
-
-
-    switch (piece) {
-        case '♔':
-        case '♚':
-            //calcul piece dispo rois
-            moves.push(
-                [rowIdx - 1, colIdx],  
-                [rowIdx + 1, colIdx],  
-                [rowIdx, colIdx - 1],  
-                [rowIdx, colIdx + 1],  
-                [rowIdx - 1, colIdx - 1], 
-                [rowIdx - 1, colIdx + 1],
-                [rowIdx + 1, colIdx - 1], 
-                [rowIdx + 1, colIdx + 1]  
-              );
-              console.log (moves);
-
-          break;
-        case '♛':
-        case '♕':
-            //calcul piece dispo reine   
-            generateLineMoves(rowIdx, colIdx, -1, 0);  
-            generateLineMoves(rowIdx, colIdx, 1, 0);  
-            generateLineMoves(rowIdx, colIdx, 0, -1);  
-            generateLineMoves(rowIdx, colIdx, 0, 1);   
-            generateLineMoves(rowIdx, colIdx, -1, -1); 
-            generateLineMoves(rowIdx, colIdx, -1, 1);  
-            generateLineMoves(rowIdx, colIdx, 1, -1);  
-            generateLineMoves(rowIdx, colIdx, 1, 1);   
-            console.log (moves);
+    }
       
-          break;
-        case '♙':
-        case '♟':
-            const direction = (piece === '♙') ? +1 : -1; 
-            moves.push([rowIdx + direction, colIdx]);  
-            if ((piece === '♙' && rowIdx === 6) || (piece === '♟' && rowIdx === 1)) {
-              moves.push([rowIdx + 2 * direction, colIdx]); 
-            }    
-            //todo premier deplacement 
-            console.log (moves);
+        switch (piece) {
+          case '♟':
+            if (rowIdx > 0 && board[rowIdx - 1][colIdx] === '') {
+              moves.push([rowIdx - 1, colIdx]);
+      
+              
+              if (rowIdx === 6 && board[rowIdx - 2][colIdx] === '') {
+                moves.push([rowIdx - 2, colIdx]); 
+              }
+            }
+      
+            
+            if (rowIdx > 0) {
+              if (colIdx > 0 && board[rowIdx - 1][colIdx - 1] !== '' && board[rowIdx - 1][colIdx - 1] !== piece) {
+                moves.push([rowIdx - 1, colIdx - 1]); 
+              }
+              if (colIdx < 7 && board[rowIdx - 1][colIdx + 1] !== '' && board[rowIdx - 1][colIdx + 1] !== piece) {
+                moves.push([rowIdx - 1, colIdx + 1]); 
+              }
+            }
           break;
           case '♗':
           case '♝':
-            //calcul piece dispo fou  
-            generateLineMoves(rowIdx, colIdx, -1, -1); 
-            generateLineMoves(rowIdx, colIdx, -1, 1); 
-            generateLineMoves(rowIdx, colIdx, 1, -1);  
-            generateLineMoves(rowIdx, colIdx, 1, 1);  
-            console.log (moves);
-         
+            for (let i = 1; i < 8; i++) {
+            moves.push([rowIdx - i, colIdx - i]); 
+            moves.push([rowIdx - i, colIdx + i]); 
+            moves.push([rowIdx + i, colIdx - i]); 
+            moves.push([rowIdx + i, colIdx + i]); 
+            }
           break;
-          case '♖':
-          case '♜':
-            //calcul piece dispo tour   
-            generateLineMoves(rowIdx, colIdx, -1, 0);
-            generateLineMoves(rowIdx, colIdx, 1, 0);   
-            generateLineMoves(rowIdx, colIdx, 0, -1);  
-            generateLineMoves(rowIdx, colIdx, 0, 1);  
-            console.log (moves);
-        
-          break;
-          case '♘':
-          case '♞':
-            //calcul piece dispo cavalier  
-            moves.push(
-                [rowIdx - 2, colIdx - 1], [rowIdx - 2, colIdx + 1],
-                [rowIdx + 2, colIdx - 1], [rowIdx + 2, colIdx + 1],
-                [rowIdx - 1, colIdx - 2], [rowIdx - 1, colIdx + 2],
-                [rowIdx + 1, colIdx - 2], [rowIdx + 1, colIdx + 2]
-              );  
-              console.log (moves);
-        
-        break;
+
     }
-
-
-
-
-
-};
-
+    return moves;
+  };
 
   return (
     <div>
       <Title text="Les échecs c'est génial" />
-      <ChessBoard board={board} onKeyPress={onKeyPress} />
+      {message && <p>{message}</p>}
+      <ChessBoard board={board} onKeyPress={onKeyPress} highlightedMoves={highlightedMoves} />
     </div>
   );
 };

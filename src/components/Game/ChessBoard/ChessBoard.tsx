@@ -1,21 +1,31 @@
 import React from 'react';
-import ChessBoardRow from 'src/components/Game/ChessBoard/ChessBoardRow.tsx';
+import ChessBoardKey from './ChessBoardKey';
 
 interface Props {
-  board: string[][]; 
-  onKeyPress: (piece: string, rowIdx: number, colIdx: number) => void; 
+  board: string[][];
+  onKeyPress: (piece: string, rowIdx: number, colIdx: number) => void;
+  highlightedMoves: [number, number][];
 }
 
-const ChessBoard: React.FC<Props> = ({ board, onKeyPress }) => {
+const ChessBoard: React.FC<Props> = ({ board, onKeyPress, highlightedMoves }) => {
   return (
     <div className="flex flex-col justify-center items-center my-12">
       {board.map((row, rowIdx) => (
-        <ChessBoardRow
-          key={rowIdx}
-          rowIdx={rowIdx}
-          pieces={row}
-          onKeyPress={onKeyPress}
-        />
+        <div className="flex" key={rowIdx}>
+          {row.map((piece, colIdx) => {
+            const isHighlighted = highlightedMoves.some(([r, c]) => r === rowIdx && c === colIdx);
+            return (
+              <ChessBoardKey
+                key={`${rowIdx}-${colIdx}`}
+                piece={piece}
+                rowIdx={rowIdx}
+                colIdx={colIdx}
+                onKeyPress={onKeyPress}
+                isHighlighted={isHighlighted}
+              />
+            );
+          })}
+        </div>
       ))}
     </div>
   );
