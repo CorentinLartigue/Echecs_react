@@ -96,7 +96,7 @@ const Game: React.FC = () => {
     }
       
         switch (piece) {
-          case '♟':
+          case '♟'://pion noir
             if (rowIdx > 0 && board[rowIdx - 1][colIdx] === '') {
               moves.push([rowIdx - 1, colIdx]);
       
@@ -116,7 +116,7 @@ const Game: React.FC = () => {
               }
             }
           break;
-          case '♙':
+          case '♙'://pion blanc
             if (rowIdx > 0 && board[rowIdx + 1][colIdx] === '') {
               moves.push([rowIdx + 1, colIdx]);
       
@@ -137,7 +137,7 @@ const Game: React.FC = () => {
             }
           break;
             
-          case '♗':
+          case '♗'://fou
           case '♝':
             for (let i = 1; i < 8; i++) {
               generateLineMoves(rowIdx, colIdx, -1, -1); // Haut gauche
@@ -146,6 +146,53 @@ const Game: React.FC = () => {
               generateLineMoves(rowIdx, colIdx, 1, 1); // Bas droit
             }
           break;
+          case '♔':
+          case '♚':
+                //calcul piece dispo rois
+                moves.push(
+                    [rowIdx - 1, colIdx],  
+                    [rowIdx + 1, colIdx],  
+                    [rowIdx, colIdx - 1],  
+                    [rowIdx, colIdx + 1],  
+                    [rowIdx - 1, colIdx - 1], 
+                    [rowIdx - 1, colIdx + 1],
+                    [rowIdx + 1, colIdx - 1], 
+                    [rowIdx + 1, colIdx + 1]  
+                  );
+                  
+              break;
+              case '♛':
+              case '♕':
+                    //calcul piece dispo reine   
+                    generateLineMoves(rowIdx, colIdx, -1, 0);  
+                    generateLineMoves(rowIdx, colIdx, 1, 0);  
+                    generateLineMoves(rowIdx, colIdx, 0, -1);  
+                    generateLineMoves(rowIdx, colIdx, 0, 1);   
+                    generateLineMoves(rowIdx, colIdx, -1, -1); 
+                    generateLineMoves(rowIdx, colIdx, -1, 1);  
+                    generateLineMoves(rowIdx, colIdx, 1, -1);  
+                    generateLineMoves(rowIdx, colIdx, 1, 1);
+              break;
+              case '♖':
+              case '♜':
+                  //calcul piece dispo tour   
+                  generateLineMoves(rowIdx, colIdx, -1, 0);
+                  generateLineMoves(rowIdx, colIdx, 1, 0);   
+                  generateLineMoves(rowIdx, colIdx, 0, -1);  
+                  generateLineMoves(rowIdx, colIdx, 0, 1);  
+                break;
+                case '♘':
+                case '♞':
+                    //calcul piece dispo cavalier  
+                    moves.push(
+                        [rowIdx - 2, colIdx - 1], [rowIdx - 2, colIdx + 1],
+                        [rowIdx + 2, colIdx - 1], [rowIdx + 2, colIdx + 1],
+                        [rowIdx - 1, colIdx - 2], [rowIdx - 1, colIdx + 2],
+                        [rowIdx + 1, colIdx - 2], [rowIdx + 1, colIdx + 2]
+                      );  
+                    
+                
+                break;
 
     }
     return moves;
