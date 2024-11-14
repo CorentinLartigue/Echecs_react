@@ -5,9 +5,10 @@ interface Props {
   rowIdx: number; 
   pieces: string[]; 
   onKeyPress: (piece: string, rowIdx: number, colIdx: number) => void; 
+  isHighlighted: boolean;
 }
 
-const ChessBoardRow: React.FC<Props> = ({ rowIdx, pieces, onKeyPress }) => {
+const ChessBoardRow: React.FC<Props> = ({ rowIdx, pieces, onKeyPress, isHighlighted}) => {
   return (
     <div className="flex">
       {pieces.map((piece, colIdx) => (
@@ -17,6 +18,8 @@ const ChessBoardRow: React.FC<Props> = ({ rowIdx, pieces, onKeyPress }) => {
           rowIdx={rowIdx}
           colIdx={colIdx}
           onKeyPress={onKeyPress}
+          isHighlighted={isHighlighted}
+
         />
       ))}
     </div>
