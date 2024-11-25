@@ -9,7 +9,7 @@ interface Props {
 
 const ChessBoard: React.FC<Props> = ({ board, onKeyPress, highlightedMoves }) => {
   return (
-    <div className="flex flex-col justify-center items-center my-12">
+    <div className="flex flex-col justify-center items-center my-12 transform: rotate(180deg)" >
       {board.map((row, rowIdx) => (
         <div className="flex" key={rowIdx}>
           {row.map((piece, colIdx) => {

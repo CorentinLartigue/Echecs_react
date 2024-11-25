@@ -298,7 +298,7 @@ const calculateValidMoves = (piece: string, rowIdx: number, colIdx: number): [nu
         generateLineMoves(rowIdx, colIdx, 1, 1); 
       }
       break;
-
+    case '♛':  
     case '♕': 
       // Mouvements ligne droite ou diagonale
       generateLineMoves(rowIdx, colIdx, 1, 0); // Haut
@@ -350,11 +350,10 @@ const calculateValidMoves = (piece: string, rowIdx: number, colIdx: number): [nu
   return moves;
 };
 
-
   return (
     <div>
       <Title text="Partie en Cours" />
-      {message && <p>{message}</p>}
+      {message && <p>{message}</p>} 
       <ChessBoard board={board} onKeyPress={onKeyPress} highlightedMoves={highlightedMoves} />
       <ReturnButton />
     </div>
