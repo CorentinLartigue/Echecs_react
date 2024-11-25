@@ -36,7 +36,10 @@ const Game: React.FC = () => {
     const isWhitePiece = whitePieces.includes(piece);
     const isBlackPiece = blackPieces.includes(piece);
 
-   
+    if (targetPiece === '♔' || targetPiece === '♚') {
+      return false;
+    }
+
     if (isWhitePiece && whitePieces.includes(targetPiece)) {
       return false;
     }
@@ -48,7 +51,7 @@ const Game: React.FC = () => {
   };
 
   const onKeyPress = (piece: string, rowIdx: number, colIdx: number) => {
-    // Vérifie si une pièce est déjà sélectionnée (cas où on effectue un mouvement)
+   
     if (selectedPiece && selectedPosition) {
       // Si le joueur clique à nouveau sur la même case, annule la sélection
       if (selectedPosition[0] === rowIdx && selectedPosition[1] === colIdx) {
@@ -68,41 +71,16 @@ const Game: React.FC = () => {
         const newBoard = board.map(row => [...row]);
         newBoard[selectedPosition[0]][selectedPosition[1]] = '';
         newBoard[rowIdx][colIdx] = selectedPiece;
-  
-        // Vérifie si le roi du joueur actif est toujours en échec après ce mouvement
-        const currentPlayerKing = currentPlayer === "white" ? '♔' : '♚';
-  
-        if (isKingInCheck(newBoard, currentPlayerKing)) {
-          // Si le roi est toujours en échec, vérifie s'il est possible de protéger le roi
-          if (!canBlockCheck(newBoard, currentPlayerKing)) {
-            setMessage("Ce mouvement ne retire pas l'échec. Choisissez un autre mouvement.");
-            return; // Annule le mouvement
-          }
-        }
-  
-        // Si le mouvement est valide et enlève l'échec, on met à jour le plateau
+
         setBoard(newBoard);
         setSelectedPiece(null);
         setSelectedPosition(null);
         setHighlightedMoves([]);
         setCurrentPlayer(currentPlayer === "white" ? "black" : "white");
-  
-        // Vérifie si le roi adverse est en échec après le déplacement
-        const opponentKing = currentPlayerKing === '♔' ? '♚' : '♔';
-        if (isKingInCheck(newBoard, opponentKing)) {
-          if (isCheckmate(newBoard, opponentKing)) {
-            setMessage("Échec et mat !");
-          } else {
-            setMessage("Échec !");
-          }
-        } else {
-          setMessage(null); // Le roi adverse est hors d'échec
-        }
-      } else {
-        setMessage("Déplacement invalide. Choisissez une case valide.");
       }
       return;
     }
+    
   
     // Vérifie si c'est le tour du joueur actif (blancs ou noirs)
     const isWhitePiece = whitePieces.includes(piece);
@@ -120,111 +98,6 @@ const Game: React.FC = () => {
     setMessage(`Pièce ${piece} sélectionnée.`);
   };
   
-  // Fonction qui vérifie si une pièce peut bloquer l'échec du roi
-  const canBlockCheck = (board: string[][], king: string): boolean => {
-    let kingPosition: [number, number] | null = null;
-    for (let row = 0; row < 8; row++) {
-      for (let col = 0; col < 8; col++) {
-        if (board[row][col] === king) {
-          kingPosition = [row, col];
-          break;
-        }
-      }
-      if (kingPosition) break;
-    }
-  
-    if (!kingPosition) return false;
-  
-    // Vérifie si une pièce alliée peut bloquer l'attaque
-    const alliedPieces = king === '♔' ? whitePieces : blackPieces;
-  
-    for (let row = 0; row < 8; row++) {
-      for (let col = 0; col < 8; col++) {
-        const piece = board[row][col];
-        if (alliedPieces.includes(piece)) {
-          const moves = calculateValidMoves(piece, row, col);
-          for (const [moveRow, moveCol] of moves) {
-            const tempBoard = board.map(row => [...row]);
-            tempBoard[moveRow][moveCol] = piece;
-            tempBoard[row][col] = '';
-            if (!isKingInCheck(tempBoard, king)) {
-              return true;
-            }
-          }
-        }
-      }
-    }
-    return false;
-  };
-  
-  
-
-// Fonction pour vérifier si une pièce est en échec et mat
-const isCheckmate = (board: string[][], king: string): boolean => {
-  let kingPosition: [number, number] | null = null;
-  for (let row = 0; row < 8; row++) {
-    for (let col = 0; col < 8; col++) {
-      if (board[row][col] === king) {
-        kingPosition = [row, col];
-        break;
-      }
-    }
-    if (kingPosition) break;
-  }
-
-  if (!kingPosition) return false;
-
-  const alliedPieces = king === '♔' ? whitePieces : blackPieces;
-  for (let row = 0; row < 8; row++) {
-    for (let col = 0; col < 8; col++) {
-      const piece = board[row][col];
-      if (alliedPieces.includes(piece)) {
-        const moves = calculateValidMoves(piece, row, col);
-        for (const [moveRow, moveCol] of moves) {
-          const tempBoard = board.map(row => [...row]);
-          tempBoard[moveRow][moveCol] = piece;
-          tempBoard[row][col] = '';
-          if (!isKingInCheck(tempBoard, king)) {
-            return false;
-          }
-        }
-      }
-    }
-  }
-  return true;
-};
-
-// Fonction pour vérifier si le roi est en échec
-const isKingInCheck = (board: string[][], king: string): boolean => {
-  const enemyPieces = king === '♔' ? blackPieces : whitePieces;
-  let kingPosition: [number, number] | null = null;
-
-  for (let row = 0; row < 8; row++) {
-    for (let col = 0; col < 8; col++) {
-      if (board[row][col] === king) {
-        kingPosition = [row, col];
-        break;
-      }
-    }
-    if (kingPosition) break;
-  }
-
-  if (!kingPosition) return false;
-
-  for (let row = 0; row < 8; row++) {
-    for (let col = 0; col < 8; col++) {
-      const piece = board[row][col];
-      if (enemyPieces.includes(piece)) {
-        const moves = calculateValidMoves(piece, row, col);
-        if (moves.some(([moveRow, moveCol]) => moveRow === kingPosition![0] && moveCol === kingPosition![1])) {
-          return true;
-        }
-      }
-    }
-  }
-  return false;
-};
-
 const calculateValidMoves = (piece: string, rowIdx: number, colIdx: number): [number, number][] => {
   const moves: [number, number][] = [];
 
@@ -232,6 +105,7 @@ const calculateValidMoves = (piece: string, rowIdx: number, colIdx: number): [nu
     let r = row + rowDirection;
     let c = col + colDirection;
     while (r >= 0 && r < 8 && c >= 0 && c < 8 && board[r][c] === '') {
+      if (board[r][c] === '♔' || board[r][c] === '♚') break;
       moves.push([r, c]);
       r += rowDirection;
       c += colDirection;
@@ -312,7 +186,7 @@ const calculateValidMoves = (piece: string, rowIdx: number, colIdx: number): [nu
       break;
     case '♞' :  
     case '♘': // Cavalier
-      const knightMoves = [
+      { const knightMoves = [
         [rowIdx + 2, colIdx + 1], [rowIdx + 2, colIdx - 1], [rowIdx - 2, colIdx + 1], [rowIdx - 2, colIdx - 1],
         [rowIdx + 1, colIdx + 2], [rowIdx + 1, colIdx - 2], [rowIdx - 1, colIdx + 2], [rowIdx - 1, colIdx - 2]
       ];
@@ -325,10 +199,10 @@ const calculateValidMoves = (piece: string, rowIdx: number, colIdx: number): [nu
           }
         }
       });
-      break;
+      break; }
     case '♚':
     case '♔': // Roi
-      const kingMoves = [
+      { const kingMoves = [
         [rowIdx + 1, colIdx], [rowIdx - 1, colIdx], [rowIdx, colIdx + 1], [rowIdx, colIdx - 1],
         [rowIdx + 1, colIdx + 1], [rowIdx - 1, colIdx - 1], [rowIdx + 1, colIdx - 1], [rowIdx - 1, colIdx + 1]
       ];
@@ -341,7 +215,7 @@ const calculateValidMoves = (piece: string, rowIdx: number, colIdx: number): [nu
           }
         }
       });
-      break;
+      break; }
 
     default:
       break;
