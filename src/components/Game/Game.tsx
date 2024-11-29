@@ -1,234 +1,134 @@
-import React, { useState } from 'react';
-import Title from '../Shared/Title';
-import ChessBoard from './ChessBoard/ChessBoard';
-import ReturnButton from '../Shared/ReturnButton';
+import React, { useCallback } from "react";
+import Title from "../Shared/Title";
+import ChessBoard from "./ChessBoard/ChessBoard";
+import ReturnButton from "../Shared/ReturnButton";
+import { useBoardState } from "../../hooks/useBoardState";
+import { usePlayerLogic } from "../../hooks/usePlayerLogic";
+import { useChessUtils } from "../../hooks/useChessUtils";
+
+// Définition des pièces des joueurs
+const whitePieces = ["♙", "♖", "♘", "♗", "♕", "♔"];
+const blackPieces = ["♟", "♜", "♞", "♝", "♛", "♚"];
+
+// Initialisation du plateau
+const initialBoard = [
+  ["♜", "♞", "♝", "♛", "♚", "♝", "♞", "♜"],
+  ["♟", "♟", "♟", "♟", "♟", "♟", "♟", "♟"],
+  ["", "", "", "", "", "", "", ""],
+  ["", "", "", "", "", "", "", ""],
+  ["", "", "", "", "", "", "", ""],
+  ["", "", "", "", "", "", "", ""],
+  ["♙", "♙", "♙", "♙", "♙", "♙", "♙", "♙"],
+  ["♖", "♘", "♗", "♔", "♕", "♗", "♘", "♖"],
+];
 
 const Game: React.FC = () => {
-  const [message, setMessage] = useState<string | null>(null);
-  const [selectedPiece, setSelectedPiece] = useState<string | null>(null);
-  const [selectedPosition, setSelectedPosition] = useState<[number, number] | null>(null);
-  const [highlightedMoves, setHighlightedMoves] = useState<[number, number][]>([]);
-  const [currentPlayer, setCurrentPlayer] = useState("white");
+  // Hooks pour la gestion de l'état du plateau
+  const { 
+    board, 
+    highlightedMoves, 
+    setHighlightedMoves, 
+    resetHighlightedMoves, 
+    updateBoard 
+  } = useBoardState(initialBoard);
 
-  const generateInitialBoard = (): string[][] => {
-    return [
-      ['♜', '♞', '♝', '♛', '♚', '♝', '♞', '♜'],
-      ['♟', '♟', '♟', '♟', '♟', '♟', '♟', '♟'],
-      ['', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', ''],
-      ['♙', '♙', '♙', '♙', '♙', '♙', '♙', '♙'],
-      ['♖', '♘', '♗', '♔', '♕', '♗', '♘', '♖']
-    ];
-  };
+  // Hooks pour la logique des joueurs
+  const { 
+    selectedPiece, 
+    selectedPosition, 
+    currentPlayer, 
+    message, 
+    setSelectedPiece, 
+    setSelectedPosition, 
+    setMessage, 
+    togglePlayer, 
+    resetSelection 
+  } = usePlayerLogic();
 
-  const [board, setBoard] = useState<string[][]>(generateInitialBoard);
+  // Utilitaires d'échecs
+  const { isAllyPiece, calculateValidMoves } = useChessUtils(board, whitePieces, blackPieces);
 
-  // Liste des pièces blanches et noires
-  const whitePieces = ['♙', '♖', '♘', '♗', '♕', '♔'];
-  const blackPieces = ['♟', '♜', '♞', '♝', '♛', '♚'];
-
-  const isAllyPiece = (piece: string, targetRow: number, targetCol: number): boolean => {
-    if (piece === '') return false;
-    
-    const targetPiece = board[targetRow][targetCol];
-    const isWhitePiece = whitePieces.includes(piece);
-    const isBlackPiece = blackPieces.includes(piece);
-
-    if (targetPiece === '♔' || targetPiece === '♚') {
-      return false;
-    }
-
-    if (isWhitePiece && whitePieces.includes(targetPiece)) {
-      return false;
-    }
-    if (isBlackPiece && blackPieces.includes(targetPiece)) {
-      return false;
-    }
-
-    return true; 
-  };
-
-  const onKeyPress = (piece: string, rowIdx: number, colIdx: number) => {
-   
-    if (selectedPiece && selectedPosition) {
-      // Si le joueur clique à nouveau sur la même case, annule la sélection
-      if (selectedPosition[0] === rowIdx && selectedPosition[1] === colIdx) {
-        setSelectedPiece(null);
-        setSelectedPosition(null);
-        setHighlightedMoves([]);
-        setMessage("Sélection annulée.");
+  const onKeyPress = useCallback(
+    (piece: string, rowIdx: number, colIdx: number) => {
+      // Si une pièce est déjà sélectionnée
+      if (selectedPiece && selectedPosition) {
+        // Si l'utilisateur clique à nouveau sur la pièce sélectionnée, annuler le coup
+        if (selectedPosition[0] === rowIdx && selectedPosition[1] === colIdx) {
+          resetSelection();  // Annule la sélection de la pièce
+          resetHighlightedMoves();  // Réinitialise les cases surlignées
+          setMessage("Sélection annulée.");
+          return;
+        }
+  
+        // Vérifier si le mouvement est valide
+        const isMoveValid = highlightedMoves.some(
+          ([moveRow, moveCol]) => moveRow === rowIdx && moveCol === colIdx
+        );
+  
+        // Vérifier si la pièce est ennemie
+        const isEnemyPiece = (currentPlayer === "white" && blackPieces.includes(piece)) || 
+                              (currentPlayer === "black" && whitePieces.includes(piece));
+  
+        // Si le mouvement est valide
+        if (isMoveValid) {
+          // Si la pièce est ennemie, la capturer
+          if (isEnemyPiece) {
+            updateBoard(selectedPosition, [rowIdx, colIdx], selectedPiece);
+            togglePlayer();  // Passer au joueur suivant après la capture
+            resetSelection();
+            resetHighlightedMoves();
+            setMessage(`Pièce ${selectedPiece} capturée à [${rowIdx}, ${colIdx}].`);
+          } else {
+            // Sinon, simplement déplacer la pièce
+            updateBoard(selectedPosition, [rowIdx, colIdx], selectedPiece);
+            togglePlayer(); // Passer au joueur suivant après le déplacement
+            resetSelection();
+            resetHighlightedMoves();
+            setMessage(`Pièce déplacée vers [${rowIdx}, ${colIdx}].`);
+          }
+        } else {
+          setMessage("Mouvement invalide.");
+        }
         return;
       }
   
-      const isMoveValid = highlightedMoves.some(
-        ([moveRow, moveCol]) => moveRow === rowIdx && moveCol === colIdx
-      );
+      // Si aucune pièce n'est sélectionnée, vérifier si la pièce est valide
+      if (piece) {
+        // Si c'est une pièce alliée, l'utilisateur peut la sélectionner
+        if (!isAllyPiece(piece, rowIdx, colIdx)) {
+          setMessage("Ce n'est pas votre pièce.");
+          return;
+        }
   
-      if (isMoveValid) {
-        // Crée une copie temporaire du plateau pour simuler le mouvement
-        const newBoard = board.map(row => [...row]);
-        newBoard[selectedPosition[0]][selectedPosition[1]] = '';
-        newBoard[rowIdx][colIdx] = selectedPiece;
-
-        setBoard(newBoard);
-        setSelectedPiece(null);
-        setSelectedPosition(null);
-        setHighlightedMoves([]);
-        setCurrentPlayer(currentPlayer === "white" ? "black" : "white");
-      }
-      return;
-    }
-    
+        // Vérifier si c'est bien le tour du joueur sélectionné
+        if ((currentPlayer === "white" && whitePieces.includes(piece)) || (currentPlayer === "black" && blackPieces.includes(piece))) {
+          // Sélectionner la pièce et calculer les mouvements valides
+          setSelectedPiece(piece);
+          setSelectedPosition([rowIdx, colIdx]);
   
-    // Vérifie si c'est le tour du joueur actif (blancs ou noirs)
-    const isWhitePiece = whitePieces.includes(piece);
-    const isBlackPiece = blackPieces.includes(piece);
-    if ((currentPlayer === "white" && !isWhitePiece) || (currentPlayer === "black" && !isBlackPiece)) {
-      setMessage(`C'est au tour des ${currentPlayer === "white" ? "blancs" : "noirs"}.`);
-      return;
-    }
+          // Calcul des mouvements valides
+          const validMoves = calculateValidMoves(piece, rowIdx, colIdx);
+          setHighlightedMoves(validMoves);
   
-    // Sélectionne la pièce et affiche les mouvements possibles
-    setSelectedPiece(piece);
-    setSelectedPosition([rowIdx, colIdx]);
-    const moves = calculateValidMoves(piece, rowIdx, colIdx);
-    setHighlightedMoves(moves);
-    setMessage(`Pièce ${piece} sélectionnée.`);
-  };
-  
-const calculateValidMoves = (piece: string, rowIdx: number, colIdx: number): [number, number][] => {
-  const moves: [number, number][] = [];
-
-  function generateLineMoves(row: number, col: number, rowDirection: number, colDirection: number): void {
-    let r = row + rowDirection;
-    let c = col + colDirection;
-    while (r >= 0 && r < 8 && c >= 0 && c < 8 && board[r][c] === '') {
-      if (board[r][c] === '♔' || board[r][c] === '♚') break;
-      moves.push([r, c]);
-      r += rowDirection;
-      c += colDirection;
-    }
-    // Vérifier si la case est occupée par un allié
-    if (r >= 0 && r < 8 && c >= 0 && c < 8 && isAllyPiece(piece, r, c)) {
-      moves.push([r, c]);
-    }
-  }
-
-  switch (piece) {
-    case '♟': // Pion blanc
-      if (rowIdx < 7 && board[rowIdx + 1][colIdx] === '') {
-        moves.push([rowIdx + 1, colIdx]);
-
-        if (rowIdx === 1 && board[rowIdx + 2][colIdx] === '') {
-          moves.push([rowIdx + 2, colIdx]);
+          setMessage(`Pièce ${piece} sélectionnée.`);
+        } else {
+          setMessage("Ce n'est pas votre tour.");
         }
       }
-
-      if (rowIdx < 7) {
-        if (colIdx > 0 && board[rowIdx + 1][colIdx - 1] !== '' && !blackPieces.includes(board[rowIdx + 1][colIdx - 1])) {
-          moves.push([rowIdx + 1, colIdx - 1]);
-        }
-        if (colIdx < 7 && board[rowIdx + 1][colIdx + 1] !== '' && !blackPieces.includes(board[rowIdx + 1][colIdx + 1])) {
-          moves.push([rowIdx + 1, colIdx + 1]);
-        }
-      }
-      break;
-
-    case '♙': // Pion noir
-      if (rowIdx > 0 && board[rowIdx - 1][colIdx] === '') {
-        moves.push([rowIdx - 1, colIdx]);
-
-        if (rowIdx === 6 && board[rowIdx - 2][colIdx] === '') {
-          moves.push([rowIdx - 2, colIdx]);
-        }
-      }
-
-      if (rowIdx > 0) {
-        if (colIdx > 0 && board[rowIdx - 1][colIdx - 1] !== '' && !whitePieces.includes(board[rowIdx - 1][colIdx - 1])) {
-          moves.push([rowIdx - 1, colIdx - 1]);
-        }
-        if (colIdx < 7 && board[rowIdx - 1][colIdx + 1] !== '' && !whitePieces.includes(board[rowIdx - 1][colIdx + 1])) {
-          moves.push([rowIdx - 1, colIdx + 1]);
-        }
-      }
-      break;
-
-      case '♖':
-      case '♜':
-            generateLineMoves(rowIdx, colIdx, -1, 0);
-            generateLineMoves(rowIdx, colIdx, 1, 0);   
-            generateLineMoves(rowIdx, colIdx, 0, -1);  
-            generateLineMoves(rowIdx, colIdx, 0, 1);  
-          break;
-    
-    case '♗':
-    case '♝':
-      for (let i = 1; i < 8; i++) {
-        generateLineMoves(rowIdx, colIdx, -1, -1); 
-        generateLineMoves(rowIdx, colIdx, -1, 1); 
-        generateLineMoves(rowIdx, colIdx, 1, -1); 
-        generateLineMoves(rowIdx, colIdx, 1, 1); 
-      }
-      break;
-    case '♛':  
-    case '♕': 
-      // Mouvements ligne droite ou diagonale
-      generateLineMoves(rowIdx, colIdx, 1, 0); // Haut
-      generateLineMoves(rowIdx, colIdx, -1, 0); // Bas
-      generateLineMoves(rowIdx, colIdx, 0, 1); // Droite
-      generateLineMoves(rowIdx, colIdx, 0, -1); // Gauche
-      generateLineMoves(rowIdx, colIdx, 1, 1); // Diagonale haut droite
-      generateLineMoves(rowIdx, colIdx, 1, -1); // Diagonale bas gauche
-      generateLineMoves(rowIdx, colIdx, -1, 1); // Diagonale haut gauche
-      generateLineMoves(rowIdx, colIdx, -1, -1); // Diagonale bas droite
-      break;
-    case '♞' :  
-    case '♘': // Cavalier
-      { const knightMoves = [
-        [rowIdx + 2, colIdx + 1], [rowIdx + 2, colIdx - 1], [rowIdx - 2, colIdx + 1], [rowIdx - 2, colIdx - 1],
-        [rowIdx + 1, colIdx + 2], [rowIdx + 1, colIdx - 2], [rowIdx - 1, colIdx + 2], [rowIdx - 1, colIdx - 2]
-      ];
-
-      knightMoves.forEach(([r, c]) => {
-        if (r >= 0 && r < 8 && c >= 0 && c < 8) {
-          // Vérifie si la case est occupée par un allié
-          if (board[r][c] === '' || isAllyPiece(piece, r, c)) {
-            moves.push([r, c]);
-          }
-        }
-      });
-      break; }
-    case '♚':
-    case '♔': // Roi
-      { const kingMoves = [
-        [rowIdx + 1, colIdx], [rowIdx - 1, colIdx], [rowIdx, colIdx + 1], [rowIdx, colIdx - 1],
-        [rowIdx + 1, colIdx + 1], [rowIdx - 1, colIdx - 1], [rowIdx + 1, colIdx - 1], [rowIdx - 1, colIdx + 1]
-      ];
-
-      kingMoves.forEach(([r, c]) => {
-        if (r >= 0 && r < 8 && c >= 0 && c < 8) {
-          // Vérifie si la case est occupée par un allié
-          if (board[r][c] === '' || isAllyPiece(piece, r, c)) {
-            moves.push([r, c]);
-          }
-        }
-      });
-      break; }
-
-    default:
-      break;
-  }
-
-  return moves;
-};
+    },
+    [selectedPiece, selectedPosition, highlightedMoves, currentPlayer, resetSelection, resetHighlightedMoves, setMessage, updateBoard, togglePlayer, isAllyPiece, setSelectedPiece, setSelectedPosition, calculateValidMoves, setHighlightedMoves]
+  );
 
   return (
     <div>
       <Title text="Partie en Cours" />
-      {message && <p>{message}</p>} 
-      <ChessBoard board={board} onKeyPress={onKeyPress} highlightedMoves={highlightedMoves} />
+      {message && <p>{message}</p>}
+      <p>Joueur actuel : {currentPlayer === "white" ? "Blanc" : "Noir"}</p>
+      <ChessBoard 
+        board={board} 
+        onKeyPress={onKeyPress} 
+        highlightedMoves={highlightedMoves} 
+      />
       <ReturnButton />
     </div>
   );
