@@ -36,8 +36,8 @@ export const useGameLogic = (initialBoard: string[][]) => {
       if (selectedPiece && selectedPosition) {
         // Si l'utilisateur clique à nouveau sur la pièce sélectionnée, annuler le coup
         if (selectedPosition[0] === rowIdx && selectedPosition[1] === colIdx) {
-          resetSelection();  // Annule la sélection de la pièce
-          resetHighlightedMoves();  // Réinitialise les cases surlignées
+          resetSelection();  
+          resetHighlightedMoves();  
           setMessage("Sélection annulée.");
           return;
         }
@@ -56,14 +56,14 @@ export const useGameLogic = (initialBoard: string[][]) => {
           // Si la pièce est ennemie, la capturer
           if (isEnemyPiece) {
             updateBoard(selectedPosition, [rowIdx, colIdx], selectedPiece);
-            togglePlayer();  // Passer au joueur suivant après la capture
+            togglePlayer();  
             resetSelection();
             resetHighlightedMoves();
             setMessage(`Pièce ${selectedPiece} capturée à [${rowIdx}, ${colIdx}].`);
           } else {
             // Sinon, simplement déplacer la pièce
             updateBoard(selectedPosition, [rowIdx, colIdx], selectedPiece);
-            togglePlayer(); // Passer au joueur suivant après le déplacement
+            togglePlayer(); 
             resetSelection();
             resetHighlightedMoves();
             setMessage(`Pièce déplacée vers [${rowIdx}, ${colIdx}].`);
@@ -74,9 +74,7 @@ export const useGameLogic = (initialBoard: string[][]) => {
         return;
       }
 
-      // Si aucune pièce n'est sélectionnée, vérifier si la pièce est valide
       if (piece) {
-        // Si c'est une pièce alliée, l'utilisateur peut la sélectionner
         if (!isAllyPiece(piece, rowIdx, colIdx)) {
           setMessage("Ce n'est pas votre pièce.");
           return;
@@ -84,11 +82,9 @@ export const useGameLogic = (initialBoard: string[][]) => {
 
         // Vérifier si c'est bien le tour du joueur sélectionné
         if ((currentPlayer === "white" && whitePieces.includes(piece)) || (currentPlayer === "black" && blackPieces.includes(piece))) {
-          // Sélectionner la pièce et calculer les mouvements valides
           setSelectedPiece(piece);
           setSelectedPosition([rowIdx, colIdx]);
 
-          // Calcul des mouvements valides
           const validMoves = calculateValidMoves(piece, rowIdx, colIdx);
           setHighlightedMoves(validMoves);
 
