@@ -13,5 +13,5 @@ export const useBoardState = (initialBoard: string[][]) => {
     setBoard(newBoard);
   }, [board]);
 
-  return { board, highlightedMoves, setHighlightedMoves, resetHighlightedMoves, updateBoard };
+  return { board, setBoard, highlightedMoves, setHighlightedMoves, resetHighlightedMoves, updateBoard };
 };

@@ -15,7 +15,7 @@ export const usePlayerLogic = () => {
     setSelectedPosition(null);
     setMessage(null);
   }, []);
-
+  
   return {
     selectedPiece,
     selectedPosition,
