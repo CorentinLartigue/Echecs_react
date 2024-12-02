@@ -9,7 +9,8 @@ const blackPieces = ["♟", "♜", "♞", "♝", "♛", "♚"];
 
 export const useGameLogic = (initialBoard: string[][]) => {
   const { 
-    board, 
+    board,
+    setBoard, 
     highlightedMoves, 
     setHighlightedMoves, 
     resetHighlightedMoves, 
@@ -108,6 +109,7 @@ export const useGameLogic = (initialBoard: string[][]) => {
 
   return {
     board,
+    setBoard,
     highlightedMoves,
     onKeyPress,
     message,
