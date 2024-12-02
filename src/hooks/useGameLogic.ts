@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { useBoardState } from "../hooks/useBoardState";
 import { usePlayerLogic } from "../hooks/usePlayerLogic";
 import { useChessUtils } from "../hooks/useChessUtils";
-
+import { useRockHook } from "../hooks/useRockHook"; // Importer useRockHook
 // Définition des pièces des joueurs
 const whitePieces = ["♙", "♖", "♘", "♗", "♕", "♔"];
 const blackPieces = ["♟", "♜", "♞", "♝", "♛", "♚"];
@@ -29,6 +29,7 @@ export const useGameLogic = (initialBoard: string[][]) => {
   } = usePlayerLogic();
 
   const { isAllyPiece, calculateValidMoves } = useChessUtils(board, whitePieces, blackPieces);
+  const { checkKingAndRookAlignment } = useRockHook(board);
 
   const onKeyPress = useCallback(
     (piece: string, rowIdx: number, colIdx: number) => {
@@ -84,11 +85,19 @@ export const useGameLogic = (initialBoard: string[][]) => {
         if ((currentPlayer === "white" && whitePieces.includes(piece)) || (currentPlayer === "black" && blackPieces.includes(piece))) {
           setSelectedPiece(piece);
           setSelectedPosition([rowIdx, colIdx]);
-
+          
           const validMoves = calculateValidMoves(piece, rowIdx, colIdx);
           setHighlightedMoves(validMoves);
-
+          
           setMessage(`Pièce ${piece} sélectionnée.`);
+          // Vérification du roque
+          console.log(piece);
+           const isRockPossible = checkKingAndRookAlignment(piece);
+           if (isRockPossible) {
+             // Ajouter les mouvements du roque aux coups validés
+             const newHighlightedMoves = highlightedMoves.concat([[rowIdx, colIdx]]);
+             setHighlightedMoves(newHighlightedMoves);
+           }
         } else {
           setMessage("Ce n'est pas votre tour.");
         }

@@ -6,7 +6,6 @@ const blackPieces = ["♟", "♜", "♞", "♝", "♛", "♚"];
 
 export const useCheckMate = (board: string[][], currentPlayer: string, setMessage: (msg: string) => void) => {
   const { calculateValidMoves } = useChessUtils(board, whitePieces, blackPieces);
-
   const [isCheck, setIsCheck] = useState(false);
   const [isCheckMate, setIsCheckMate] = useState(false);
 

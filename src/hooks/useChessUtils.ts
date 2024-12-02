@@ -1,10 +1,13 @@
+
 export const useChessUtils = (
+    
     board: string[][],
     whitePieces: string[],
     blackPieces: string[]
 ) => {
     // Vérifie si la pièce cible est une pièce alliée.
     const isAllyPiece = (piece: string, targetRow: number, targetCol: number): boolean => {
+        
         const targetPiece = board[targetRow][targetCol];
         if (!targetPiece) return false;
 
@@ -139,6 +142,7 @@ export const useChessUtils = (
 
         // Mouvement du Roi (♔ / ♚)
         if (piece === "♔" || piece === "♚") {
+            // console.log("rois.",piece,);
             const kingMoves: [number, number][] = [
                 [-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1],
             ];
